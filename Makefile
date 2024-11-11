@@ -12,7 +12,7 @@ help: ## Prints this help message
 build: build-go build-contracts ## Builds Go components and contracts-bedrock
 .PHONY: build
 
-build-go: submodules op-node op-proposer op-batcher ## Builds op-node, op-proposer and op-batcher
+build-go: submodules op-node op-proposer op-batcher op-price-oracle ## Builds op-node, op-proposer and op-batcher
 .PHONY: build-go
 
 build-contracts:
@@ -124,6 +124,10 @@ op-dispute-mon: ## Builds op-dispute-mon binary
 op-program: ## Builds op-program binary
 	make -C ./op-program op-program
 .PHONY: op-program
+
+op-price-oracle: ## Builds op-price-oracle binary
+	make -C ./op-price-oracle op-price-oracle
+.PHONY: op-price-oracle
 
 cannon:  ## Builds cannon binary
 	make -C ./cannon cannon

@@ -465,6 +465,7 @@ contract Specification_Test is CommonTest {
         _addSpec({ _name: "SystemConfig", _sel: _getSel("gasPayingTokenName()") });
         _addSpec({ _name: "SystemConfig", _sel: _getSel("gasPayingTokenSymbol()") });
         _addSpec({ _name: "SystemConfig", _sel: _getSel("isCustomGasToken()") });
+        _addSpec({ _name: "SystemConfig", _sel: _getSel("updateGasPayingToken(address)") });
         _addSpec({ _name: "SystemConfig", _sel: _getSel("DISPUTE_GAME_FACTORY_SLOT()") });
         _addSpec({ _name: "SystemConfig", _sel: _getSel("disputeGameFactory()") });
         _addSpec({
@@ -533,6 +534,7 @@ contract Specification_Test is CommonTest {
         _addSpec({ _name: "SystemConfigInterop", _sel: _getSel("gasPayingTokenName()") });
         _addSpec({ _name: "SystemConfigInterop", _sel: _getSel("gasPayingTokenSymbol()") });
         _addSpec({ _name: "SystemConfigInterop", _sel: _getSel("isCustomGasToken()") });
+        _addSpec({ _name: "SystemConfigInterop", _sel: _getSel("updateGasPayingToken(address)") });
         _addSpec({ _name: "SystemConfigInterop", _sel: _getSel("DISPUTE_GAME_FACTORY_SLOT()") });
         _addSpec({ _name: "SystemConfigInterop", _sel: _getSel("disputeGameFactory()") });
         _addSpec({

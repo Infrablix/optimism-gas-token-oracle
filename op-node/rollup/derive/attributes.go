@@ -3,6 +3,7 @@ package derive
 import (
 	"context"
 	"fmt"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -21,6 +22,7 @@ type L1ReceiptsFetcher interface {
 
 type SystemConfigL2Fetcher interface {
 	SystemConfigByL2Hash(ctx context.Context, hash common.Hash) (eth.SystemConfig, error)
+	CustomGasTokenLatestPrice(ctx context.Context, hash common.Hash) (*big.Int, error)
 }
 
 // FetchingAttributesBuilder fetches inputs for the building of L2 payload attributes on the fly.
@@ -116,6 +118,14 @@ func (ba *FetchingAttributesBuilder) PreparePayloadAttributes(ctx context.Contex
 		upgradeTxs = append(upgradeTxs, fjord...)
 	}
 
+	if ba.rollupCfg.UseCustomGasToken {
+		customGasTokenPrice, err := ba.l2.CustomGasTokenLatestPrice(ctx, l2Parent.Hash)
+		if err != nil {
+			return nil, NewTemporaryError(fmt.Errorf("failed to fetch custom gas token price: %w", err))
+		}
+		l1Info = &customFeeBlockInfo{l1Info, customGasTokenPrice}
+	}
+
 	l1InfoTx, err := L1InfoDepositBytes(ba.rollupCfg, sysConfig, seqNumber, l1Info, nextL2Time)
 	if err != nil {
 		return nil, NewCriticalError(fmt.Errorf("failed to create l1InfoTx: %w", err))
@@ -159,4 +169,37 @@ func (ba *FetchingAttributesBuilder) PreparePayloadAttributes(ctx context.Contex
 		Withdrawals:           withdrawals,
 		ParentBeaconBlockRoot: parentBeaconRoot,
 	}, nil
+}
+
+var oneEth = new(big.Int).Exp(big.NewInt(10), big.NewInt(18), nil)
+
+type customFeeBlockInfo struct {
+	eth.BlockInfo
+	CustomGasTokenPrice *big.Int
+}
+
+func (c *customFeeBlockInfo) BaseFee() *big.Int {
+	// if price not yet set, take the default price in ETH. Worst case, it will charge less than actually required
+	// for first few txs on the blockchain.
+	if c.CustomGasTokenPrice.Cmp(common.Big0) == 0 {
+		return c.BlockInfo.BaseFee()
+	}
+
+	price := new(big.Int)
+	price.Mul(c.BlockInfo.BaseFee(), oneEth)
+	price.Div(price, c.CustomGasTokenPrice)
+	return price
+}
+
+func (c *customFeeBlockInfo) BlobBaseFee() *big.Int {
+	// if price not yet set, take the default price in ETH. Worst case, it will charge less than actually required
+	// for first few txs on the blockchain.
+	if c.CustomGasTokenPrice.Cmp(common.Big0) == 0 {
+		return c.BlockInfo.BlobBaseFee()
+	}
+
+	price := new(big.Int)
+	price.Mul(c.BlockInfo.BlobBaseFee(), oneEth)
+	price.Div(price, c.CustomGasTokenPrice)
+	return price
 }

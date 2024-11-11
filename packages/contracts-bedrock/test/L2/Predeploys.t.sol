@@ -4,12 +4,19 @@ pragma solidity 0.8.15;
 import { CommonTest } from "test/setup/CommonTest.sol";
 import { EIP1967Helper } from "test/mocks/EIP1967Helper.sol";
 import { Predeploys } from "src/libraries/Predeploys.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /// @title PredeploysTest
 contract PredeploysBaseTest is CommonTest {
     //////////////////////////////////////////////////////
     /// Internal helpers
     //////////////////////////////////////////////////////
+
+    function setUp() public virtual override {
+        ERC20 token = new ERC20("Silly", "SIL");
+        super.enableCustomGasToken(address(token));
+        super.setUp();
+    }
 
     /// @dev Returns true if the address is a predeploy that has a different code in the interop mode.
     function _interopCodeDiffer(address _addr) internal pure returns (bool) {
@@ -64,7 +71,7 @@ contract PredeploysBaseTest is CommonTest {
                 continue;
             }
 
-            bool isPredeploy = Predeploys.isSupportedPredeploy(addr, _useInterop);
+            bool isPredeploy = Predeploys.isSupportedPredeploy(addr, _useInterop, deploy.cfg().useCustomGasToken());
 
             bytes memory code = addr.code;
             if (isPredeploy) assertTrue(code.length > 0);

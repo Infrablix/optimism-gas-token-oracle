@@ -33,6 +33,7 @@ reqenv "GS_ADMIN_ADDRESS"
 reqenv "GS_BATCHER_ADDRESS"
 reqenv "GS_PROPOSER_ADDRESS"
 reqenv "GS_SEQUENCER_ADDRESS"
+reqenv "GS_CUSTOM_GAS_TOKEN_ORACLE_OWNER_ADDRESS"
 reqenv "L1_RPC_URL"
 reqenv "L1_CHAIN_ID"
 reqenv "L2_CHAIN_ID"
@@ -61,10 +62,10 @@ cat << EOL > tmp_config.json
   "channelTimeout": 300,
 
   "p2pSequencerAddress": "$GS_SEQUENCER_ADDRESS",
-  "batchInboxAddress": "0xff00000000000000000000000000000000042069",
+  "batchInboxAddress": "0xff$(printf '0%.0s' $(seq 1 $((38 - ${#L2_CHAIN_ID}))))$L2_CHAIN_ID",
   "batchSenderAddress": "$GS_BATCHER_ADDRESS",
 
-  "l2OutputOracleSubmissionInterval": 120,
+  "l2OutputOracleSubmissionInterval": $L2_OUTPUT_ORACLE_SUBMISSION_INTERVAL,
   "l2OutputOracleStartingBlockNumber": 0,
   "l2OutputOracleStartingTimestamp": $timestamp,
 
@@ -89,8 +90,10 @@ cat << EOL > tmp_config.json
 
   "gasPriceOracleOverhead": 0,
   "gasPriceOracleScalar": 1000000,
+  "gasPriceOracleBaseFeeScalar": $GAS_PRICE_ORACLE_BASE_FEE_SCALAR,
+  "gasPriceOracleBlobBaseFeeScalar": $GAS_PRICE_ORACLE_BLOB_BASE_FEE_SCALAR,
 
-  "enableGovernance": true,
+  "enableGovernance": false,
   "governanceTokenSymbol": "OP",
   "governanceTokenName": "Optimism",
   "governanceTokenOwner": "$GS_ADMIN_ADDRESS",
@@ -142,7 +145,11 @@ cat << EOL >> tmp_config.json
   "faultGameWithdrawalDelay": 600,
 
   "preimageOracleMinProposalSize": 1800000,
-  "preimageOracleChallengePeriod": 300
+  "preimageOracleChallengePeriod": 300,
+
+  "useCustomGasToken": $USE_CUSTOM_GAS_TOKEN,
+  "customGasTokenAddress": "$CUSTOM_GAS_TOKEN_ADDRESS",
+  "customGasTokenOracleOwnerAddress": "$GS_CUSTOM_GAS_TOKEN_ORACLE_OWNER_ADDRESS"
 }
 EOL
 

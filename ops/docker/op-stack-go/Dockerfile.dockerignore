@@ -12,6 +12,7 @@
 !/op-conductor
 !/op-node
 !/op-preimage
+!/op-price-oracle
 !/op-program
 !/op-proposer
 !/op-service

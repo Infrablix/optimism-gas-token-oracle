@@ -137,6 +137,9 @@ type Config struct {
 
 	// AltDAConfig. We are in the process of migrating to the AltDAConfig from these legacy top level values
 	AltDAConfig *AltDAConfig `json:"alt_da,omitempty"`
+
+	// UseCustomGasToken is a flag to indicate that a custom gas token should be used
+	UseCustomGasToken bool `json:"useCustomGasToken,omitempty"`
 }
 
 // ValidateL1Config checks L1 config variables for errors.
@@ -646,6 +649,7 @@ func (c *Config) LogDescription(log log.Logger, l2Chains map[string]string) {
 		"holocene_time", fmtForkTimeOrUnset(c.HoloceneTime),
 		"interop_time", fmtForkTimeOrUnset(c.InteropTime),
 		"alt_da", c.AltDAConfig != nil,
+		"custom_gas_token_mode", c.UseCustomGasToken,
 	)
 }
 

@@ -40,6 +40,10 @@ export L2_BLOCK_TIME=2
 # debug_geth, erigon, basic, any.
 export L1_RPC_KIND=
 
+# Custom gas price oracle parameters
+export USE_CUSTOM_GAS_TOKEN=false
+export CUSTOM_GAS_TOKEN_ADDRESS=
+
 ##################################################
 #               Contract Deployment              #
 ##################################################

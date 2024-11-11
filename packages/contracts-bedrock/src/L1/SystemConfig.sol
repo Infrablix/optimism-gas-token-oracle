@@ -332,6 +332,27 @@ contract SystemConfig is OwnableUpgradeable, ISemver, IGasToken {
         }
     }
 
+    /// @notice Update the gas paying token address, when existing token is being replaced by new version of token.
+    function updateGasPayingToken(address _token) external onlyOwner {
+        (address gasToken,) = gasPayingToken();
+        if (_token != address(0) && _token != Constants.ETHER && gasToken != address(0)) {
+            require(
+                ERC20(_token).decimals() == GAS_PAYING_TOKEN_DECIMALS, "SystemConfig: bad decimals of gas paying token"
+            );
+            bytes32 name = GasPayingToken.sanitize(ERC20(_token).name());
+            bytes32 symbol = GasPayingToken.sanitize(ERC20(_token).symbol());
+
+            // Set the gas paying token in storage and in the OptimismPortal.
+            GasPayingToken.set({ _token: _token, _decimals: GAS_PAYING_TOKEN_DECIMALS, _name: name, _symbol: symbol });
+            IOptimismPortal(payable(optimismPortal())).setGasPayingToken({
+                _token: _token,
+                _decimals: GAS_PAYING_TOKEN_DECIMALS,
+                _name: name,
+                _symbol: symbol
+            });
+        }
+    }
+
     /// @notice Updates the unsafe block signer address. Can only be called by the owner.
     /// @param _unsafeBlockSigner New unsafe block signer address.
     function setUnsafeBlockSigner(address _unsafeBlockSigner) external onlyOwner {

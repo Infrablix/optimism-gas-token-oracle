@@ -18,6 +18,7 @@ import { L1FeeVault } from "src/L2/L1FeeVault.sol";
 import { OptimismSuperchainERC20Beacon } from "src/L2/OptimismSuperchainERC20Beacon.sol";
 import { OptimismMintableERC721Factory } from "src/universal/OptimismMintableERC721Factory.sol";
 import { GovernanceToken } from "src/governance/GovernanceToken.sol";
+import { CustomGasTokenPriceOracle } from "src/L2/CustomGasTokenPriceOracle.sol";
 
 // Libraries
 import { Predeploys } from "src/libraries/Predeploys.sol";
@@ -232,7 +233,7 @@ contract L2Genesis is Deployer {
             vm.etch(addr, code);
             EIP1967Helper.setAdmin(addr, Predeploys.PROXY_ADMIN);
 
-            if (Predeploys.isSupportedPredeploy(addr, cfg.useInterop())) {
+            if (Predeploys.isSupportedPredeploy(addr, cfg.useInterop(), cfg.useCustomGasToken())) {
                 address implementation = Predeploys.predeployToCodeNamespace(addr);
                 console.log("Setting proxy %s implementation: %s", addr, implementation);
                 EIP1967Helper.setImplementation(addr, implementation);
@@ -271,6 +272,9 @@ contract L2Genesis is Deployer {
         setSchemaRegistry(); // 20
         setEAS(); // 21
         setGovernanceToken(); // 42: OP (not behind a proxy)
+        if (cfg.useCustomGasToken()) {
+            setCustomGasTokenPriceOracle(); // 7fe
+        }
         if (cfg.useInterop()) {
             setCrossL2Inbox(); // 22
             setL2ToL2CrossDomainMessenger(); // 23
@@ -502,6 +506,31 @@ contract L2Genesis is Deployer {
         /// Reset so its not included state dump
         vm.etch(address(eas), "");
         vm.resetNonce(address(eas));
+    }
+
+    /// @notice This predeploy is following the safety invariant #2,
+    function setCustomGasTokenPriceOracle() public {
+        CustomGasTokenPriceOracle oracle = new CustomGasTokenPriceOracle();
+        bytes32 _ownerSlot = hex"0000000000000000000000000000000000000000000000000000000000000000";
+
+        address impl = Predeploys.predeployToCodeNamespace(Predeploys.CUSTOM_GAS_TOKEN_PRICE_ORACLE);
+        console.log(
+            "Setting %s implementation at: %s (owner %s)",
+            "CustomGasTokenPriceOracle",
+            impl,
+            cfg.customGasTokenOracleOwnerAddress()
+        );
+        vm.etch(impl, address(oracle).code);
+        vm.store(
+            Predeploys.CUSTOM_GAS_TOKEN_PRICE_ORACLE,
+            _ownerSlot,
+            bytes32(uint256(uint160(cfg.customGasTokenOracleOwnerAddress())))
+        );
+
+        /// Reset so its not included state dump
+        vm.store(address(oracle), _ownerSlot, bytes32(0));
+        vm.etch(address(oracle), "");
+        vm.resetNonce(address(oracle));
     }
 
     /// @notice This predeploy is following the safety invariant #2.

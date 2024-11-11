@@ -29,6 +29,7 @@ const (
 	L2toL2CrossDomainMessenger    = "0x4200000000000000000000000000000000000023"
 	SuperchainWETH                = "0x4200000000000000000000000000000000000024"
 	ETHLiquidity                  = "0x4200000000000000000000000000000000000025"
+	CustomGasTokenPriceOracle     = "0x42000000000000000000000000000000000007fe" // increment address backwards
 	Create2Deployer               = "0x13b0D85CcB8bf860b6b79AF3029fCA081AE9beF2"
 	MultiCall3                    = "0xcA11bde05977b3631167028862bE2a173976CA11"
 	Safe_v130                     = "0x69f4D1788e39c87893C980c06EdF4b7f686e2938"
@@ -68,6 +69,7 @@ var (
 	L2toL2CrossDomainMessengerAddr    = common.HexToAddress(L2toL2CrossDomainMessenger)
 	SuperchainWETHAddr                = common.HexToAddress(SuperchainWETH)
 	ETHLiquidityAddr                  = common.HexToAddress(ETHLiquidity)
+	CustomGasTokenPriceOracleAddr     = common.HexToAddress(CustomGasTokenPriceOracle)
 	Create2DeployerAddr               = common.HexToAddress(Create2Deployer)
 	MultiCall3Addr                    = common.HexToAddress(MultiCall3)
 	Safe_v130Addr                     = common.HexToAddress(Safe_v130)
@@ -116,6 +118,7 @@ func init() {
 	Predeploys["L1FeeVault"] = &Predeploy{Address: L1FeeVaultAddr}
 	Predeploys["SchemaRegistry"] = &Predeploy{Address: SchemaRegistryAddr}
 	Predeploys["EAS"] = &Predeploy{Address: EASAddr}
+	Predeploys["CustomGasTokenPriceOracle"] = &Predeploy{Address: CustomGasTokenPriceOracleAddr}
 	Predeploys["Create2Deployer"] = &Predeploy{
 		Address:       Create2DeployerAddr,
 		ProxyDisabled: true,

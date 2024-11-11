@@ -2,6 +2,7 @@ package testutils
 
 import (
 	"context"
+	"math/big"
 
 	"github.com/ethereum-optimism/optimism/op-service/eth"
 	"github.com/ethereum/go-ethereum/common"
@@ -14,6 +15,11 @@ type MockL2Client struct {
 func (c *MockL2Client) L2BlockRefByLabel(ctx context.Context, label eth.BlockLabel) (eth.L2BlockRef, error) {
 	out := c.Mock.MethodCalled("L2BlockRefByLabel", label)
 	return out[0].(eth.L2BlockRef), *out[1].(*error)
+}
+
+func (c *MockL2Client) CustomGasTokenLatestPrice(ctx context.Context, hash common.Hash) (*big.Int, error) {
+	out := c.Mock.Called(hash)
+	return out.Get(0).(*big.Int), out.Error(1)
 }
 
 func (m *MockL2Client) ExpectL2BlockRefByLabel(label eth.BlockLabel, ref eth.L2BlockRef, err error) {

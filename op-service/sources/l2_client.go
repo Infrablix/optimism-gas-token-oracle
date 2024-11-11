@@ -3,6 +3,7 @@ package sources
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 
@@ -114,6 +115,17 @@ func (s *L2Client) L2BlockRefByLabel(ctx context.Context, label eth.BlockLabel) 
 	}
 	s.l2BlockRefsCache.Add(ref.Hash, ref)
 	return ref, nil
+}
+
+var customGasTokenPriceOracleLatestPriceSlot = common.BigToHash(big.NewInt(1))
+
+// CustomGasTokenLatestPrice returns the price of the custom gas token at provided block hash.
+func (s *L2Client) CustomGasTokenLatestPrice(ctx context.Context, hash common.Hash) (*big.Int, error) {
+	value, err := s.GetStorageAt(ctx, predeploys.CustomGasTokenPriceOracleAddr, customGasTokenPriceOracleLatestPriceSlot, hash.String())
+	if err != nil {
+		return nil, err
+	}
+	return value.Big(), nil
 }
 
 // L2BlockRefByNumber returns the [eth.L2BlockRef] for the given block number.

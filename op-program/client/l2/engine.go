@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/big"
 
 	"github.com/ethereum-optimism/optimism/op-node/rollup"
 	"github.com/ethereum-optimism/optimism/op-node/rollup/derive"
@@ -125,6 +126,11 @@ func (o *OracleEngine) L2BlockRefByLabel(ctx context.Context, label eth.BlockLab
 		return eth.L2BlockRef{}, ErrNotFound
 	}
 	return derive.L2BlockToBlockRef(o.rollupCfg, block)
+}
+
+// CustomGasTokenLatestPrice returns the price of the custom gas token at provided block hash.
+func (o *OracleEngine) CustomGasTokenLatestPrice(ctx context.Context, hash common.Hash) (*big.Int, error) {
+	return nil, fmt.Errorf("'CustomGasTokenLatestPrice' not implemented for OracleEngine")
 }
 
 func (o *OracleEngine) L2BlockRefByHash(ctx context.Context, l2Hash common.Hash) (eth.L2BlockRef, error) {

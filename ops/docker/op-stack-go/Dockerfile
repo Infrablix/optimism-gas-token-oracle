@@ -110,7 +110,12 @@ ARG OP_NODE_VERSION=v0.0.0
 RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build cd op-chain-ops && make op-deployer  \
   GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE VERSION="$OP_DEPLOYER_VERSION"
 
-FROM --platform=$TARGETPLATFORM $TARGET_BASE_IMAGE AS cannon-target
+FROM --platform=$BUILDPLATFORM builder as op-price-oracle-builder
+ARG OP_PRICE_ORACLE_VERSION=v0.0.0
+RUN --mount=type=cache,target=/root/.cache/go-build cd op-price-oracle && make op-price-oracle  \
+    GOOS=$TARGETOS GOARCH=$TARGETARCH GITCOMMIT=$GIT_COMMIT GITDATE=$GIT_DATE  VERSION="$OP_PRICE_ORACLE_VERSION"
+
+FROM --platform=$TARGETPLATFORM $TARGET_BASE_IMAGE as cannon-target
 COPY --from=cannon-builder /app/cannon/bin/cannon /usr/local/bin/
 COPY --from=cannon-builder /app/cannon/multicannon/embeds/* /usr/local/bin/
 CMD ["cannon"]
@@ -164,3 +169,7 @@ CMD ["op-supervisor"]
 FROM --platform=$TARGETPLATFORM $TARGET_BASE_IMAGE AS op-deployer-target
 COPY --from=op-deployer-builder /app/op-chain-ops/bin/op-deployer /usr/local/bin/
 CMD ["op-deployer"]
+
+FROM --platform=$TARGETPLATFORM $TARGET_BASE_IMAGE as op-price-oracle-target
+COPY --from=op-price-oracle-builder /app/op-price-oracle/bin/op-price-oracle /usr/local/bin/
+CMD ["op-price-oracle"]

@@ -74,6 +74,9 @@ library Predeploys {
     /// @notice Address of the EAS predeploy.
     address internal constant EAS = 0x4200000000000000000000000000000000000021;
 
+    /// @notice Address of the CustomGasTokenPriceOracle predeploy.
+    address internal constant CUSTOM_GAS_TOKEN_PRICE_ORACLE = 0x42000000000000000000000000000000000007fE;
+
     /// @notice Address of the GovernanceToken predeploy.
     address internal constant GOVERNANCE_TOKEN = 0x4200000000000000000000000000000000000042;
 
@@ -127,6 +130,7 @@ library Predeploys {
         if (_addr == L1_FEE_VAULT) return "L1FeeVault";
         if (_addr == SCHEMA_REGISTRY) return "SchemaRegistry";
         if (_addr == EAS) return "EAS";
+        if (_addr == CUSTOM_GAS_TOKEN_PRICE_ORACLE) return "CustomGasTokenPriceOracle";
         if (_addr == GOVERNANCE_TOKEN) return "GovernanceToken";
         if (_addr == LEGACY_ERC20_ETH) return "LegacyERC20ETH";
         if (_addr == CROSS_L2_INBOX) return "CrossL2Inbox";
@@ -144,7 +148,15 @@ library Predeploys {
     }
 
     /// @notice Returns true if the address is a defined predeploy that is embedded into new OP-Stack chains.
-    function isSupportedPredeploy(address _addr, bool _useInterop) internal pure returns (bool) {
+    function isSupportedPredeploy(
+        address _addr,
+        bool _useInterop,
+        bool _useCustomGasToken
+    )
+        internal
+        pure
+        returns (bool)
+    {
         return _addr == LEGACY_MESSAGE_PASSER || _addr == DEPLOYER_WHITELIST || _addr == WETH
             || _addr == L2_CROSS_DOMAIN_MESSENGER || _addr == GAS_PRICE_ORACLE || _addr == L2_STANDARD_BRIDGE
             || _addr == SEQUENCER_FEE_WALLET || _addr == OPTIMISM_MINTABLE_ERC20_FACTORY || _addr == L1_BLOCK_NUMBER
@@ -154,7 +166,8 @@ library Predeploys {
             || (_useInterop && _addr == CROSS_L2_INBOX) || (_useInterop && _addr == L2_TO_L2_CROSS_DOMAIN_MESSENGER)
             || (_useInterop && _addr == SUPERCHAIN_WETH) || (_useInterop && _addr == ETH_LIQUIDITY)
             || (_useInterop && _addr == OPTIMISM_SUPERCHAIN_ERC20_FACTORY)
-            || (_useInterop && _addr == OPTIMISM_SUPERCHAIN_ERC20_BEACON);
+            || (_useInterop && _addr == OPTIMISM_SUPERCHAIN_ERC20_BEACON)
+            || (_useCustomGasToken && _addr == CUSTOM_GAS_TOKEN_PRICE_ORACLE);
     }
 
     function isPredeployNamespace(address _addr) internal pure returns (bool) {

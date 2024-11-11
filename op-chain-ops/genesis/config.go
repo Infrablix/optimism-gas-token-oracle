@@ -265,6 +265,8 @@ type GasTokenDeployConfig struct {
 	UseCustomGasToken bool `json:"useCustomGasToken"`
 	// CustomGasTokenAddress is the address of the ERC20 token to be used to pay for gas on L2.
 	CustomGasTokenAddress common.Address `json:"customGasTokenAddress"`
+	// CustomGasTokenOracleAddress is the address of the oracle owner that posts the price updates of the custom gas token.
+	CustomGasTokenOracleOwnerAddress common.Address `json:"customGasTokenOracleOwnerAddress"`
 }
 
 var _ ConfigChecker = (*GasTokenDeployConfig)(nil)
@@ -934,6 +936,7 @@ func (d *DeployConfig) RollupConfig(l1StartBlock *types.Header, l2GenesisBlockHa
 		InteropTime:             d.InteropTime(l1StartTime),
 		ProtocolVersionsAddress: d.ProtocolVersionsProxy,
 		AltDAConfig:             altDA,
+		UseCustomGasToken:       d.UseCustomGasToken,
 	}, nil
 }
 

@@ -230,6 +230,7 @@ contract Setup {
         labelPredeploy(Predeploys.LEGACY_MESSAGE_PASSER);
         labelPredeploy(Predeploys.GOVERNANCE_TOKEN);
         labelPredeploy(Predeploys.EAS);
+        labelPredeploy(Predeploys.CUSTOM_GAS_TOKEN_PRICE_ORACLE);
         labelPredeploy(Predeploys.SCHEMA_REGISTRY);
         labelPredeploy(Predeploys.WETH);
         labelPredeploy(Predeploys.SUPERCHAIN_WETH);

@@ -88,6 +88,7 @@ contract DeployConfig is Script {
 
     bool public useCustomGasToken;
     address public customGasTokenAddress;
+    address public customGasTokenOracleOwnerAddress;
 
     bool public useInterop;
 
@@ -173,6 +174,7 @@ contract DeployConfig is Script {
 
         useCustomGasToken = _readOr(_json, "$.useCustomGasToken", false);
         customGasTokenAddress = _readOr(_json, "$.customGasTokenAddress", address(0));
+        customGasTokenOracleOwnerAddress = _readOr(_json, "$.customGasTokenOracleOwnerAddress", address(0));
 
         useInterop = _readOr(_json, "$.useInterop", false);
     }

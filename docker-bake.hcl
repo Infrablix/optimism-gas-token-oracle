@@ -41,6 +41,10 @@ variable "OP_BATCHER_VERSION" {
   default = "${GIT_VERSION}"
 }
 
+variable "OP_PRICE_ORACLE_VERSION" {
+  default = "${GIT_VERSION}"
+}
+
 variable "OP_PROPOSER_VERSION" {
   default = "${GIT_VERSION}"
 }
@@ -97,6 +101,19 @@ target "op-batcher" {
   target = "op-batcher-target"
   platforms = split(",", PLATFORMS)
   tags = [for tag in split(",", IMAGE_TAGS) : "${REGISTRY}/${REPOSITORY}/op-batcher:${tag}"]
+}
+
+target "op-price-oracle" {
+  dockerfile = "ops/docker/op-stack-go/Dockerfile"
+  context = "."
+  args = {
+    GIT_COMMIT = "${GIT_COMMIT}"
+    GIT_DATE = "${GIT_DATE}"
+    OP_PRICE_ORACLE_VERSION = "${OP_PRICE_ORACLE_VERSION}"
+  }
+  target = "op-price-oracle-target"
+  platforms = split(",", PLATFORMS)
+  tags = [for tag in split(",", IMAGE_TAGS) : "${REGISTRY}/${REPOSITORY}/op-price-oracle:${tag}"]
 }
 
 target "op-proposer" {
